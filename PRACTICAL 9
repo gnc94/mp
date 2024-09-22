@@ -1,0 +1,107 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final List<String> _items = []; // Simulates our 'database'
+  final TextEditingController _controller = TextEditingController();
+  int _editingIndex = -1;
+
+  void _addOrUpdateItem() {
+    final name = _controller.text;
+    if (name.isNotEmpty) {
+      setState(() {
+        if (_editingIndex == -1) {
+          _items.add(name); // Simulates adding to the database
+        } else {
+          _items[_editingIndex] = name; // Simulates updating the database
+          _editingIndex = -1;
+        }
+      });
+      _controller.clear();
+    }
+  }
+
+  void _editItem(int index) {
+    setState(() {
+      _controller.text = _items[index]; // Load item for editing
+      _editingIndex = index; // Mark the item as editable
+    });
+  }
+
+  void _removeItem(int index) {
+    setState(() {
+      _items.removeAt(index); // Simulates deleting from the database
+      _controller.clear(); // Clear the text field
+      _editingIndex = -1; // Reset editing index
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Simulated Database App')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      labelText: _editingIndex == -1 ? 'Item name' : 'Edit item',
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(_editingIndex == -1 ? Icons.add : Icons.save),
+                  onPressed: _addOrUpdateItem,
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _items.length,
+              itemBuilder: (context, index) {
+                final item = _items[index];
+                return ListTile(
+                  title: Text(item),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () => _editItem(index),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () => _removeItem(index),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
