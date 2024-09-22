@@ -1,0 +1,176 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(
+    home: HomeScreen(),
+  ));
+}
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController idController = TextEditingController();
+  String genderValue = "";
+  bool hobby1 = false;
+  bool hobby2 = false;
+  bool hobby3 = false;
+  String strhobby1 = "";
+  String strhobby2 = "";
+  String strhobby3 = "";
+  final formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("User Info"),
+      ),
+      body: Form(
+        key: formKey,
+        child: Column(
+          children: [
+            SizedBox(height: 10),
+            TextFormField(
+              controller: nameController,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please Enter Your Name';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                labelText: "Enter Your Name",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: idController,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please Enter your ID';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                labelText: "Enter your ID",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            RadioListTile<String>(
+              value: 'Male',
+              groupValue: genderValue,
+              onChanged: (val) {
+                setState(() {
+                  genderValue = val!;
+                });
+              },
+              title: Text("Male"),
+            ),
+            RadioListTile<String>(
+              value: 'Female',
+              groupValue: genderValue,
+              onChanged: (val) {
+                setState(() {
+                  genderValue = val!;
+                });
+              },
+              title: Text("Female"),
+            ),
+            CheckboxListTile(
+              value: hobby1,
+              onChanged: (value) {
+                setState(() {
+                  hobby1 = value!;
+                  strhobby1 = hobby1 ? 'Playing' : '';
+                });
+              },
+              title: Text("Playing"),
+            ),
+            CheckboxListTile(
+              value: hobby2,
+              onChanged: (value) {
+                setState(() {
+                  hobby2 = value!;
+                  strhobby2 = hobby2 ? 'Singing' : '';
+                });
+              },
+              title: Text("Singing"),
+            ),
+            CheckboxListTile(
+              value: hobby3,
+              onChanged: (value) {
+                setState(() {
+                  hobby3 = value!;
+                  strhobby3 = hobby3 ? 'Drawing' : '';
+                });
+              },
+              title: Text("Drawing"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  if (genderValue.isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NextScreen(
+                          name: nameController.text,
+                          id: idController.text,
+                          gender: genderValue,
+                          hobbies: '${strhobby1}\n${strhobby2}\n${strhobby3}',
+                        ),
+                      ),
+                    );
+                  }
+                }
+              },
+              child: Text("Continue"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class NextScreen extends StatelessWidget {
+  final String? name;
+  final String? id;
+  final String? gender;
+  final String? hobbies;
+
+  const NextScreen({this.name, this.id, this.gender, this.hobbies});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("User Details"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Name: ${name ?? ''}"),
+            Text("ID: ${id ?? ''}"),
+            Text("Gender: ${gender ?? ''}"),
+            Text("Hobbies: ${hobbies ?? ''}"),
+          ],
+        ),
+      ),
+    );
+  }
+}
