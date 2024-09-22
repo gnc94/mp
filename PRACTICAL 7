@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Animation Example',
+      home: AnimationDemo(),
+    );
+  }
+}
+
+class AnimationDemo extends StatefulWidget {
+  @override
+  _AnimationDemoState createState() => _AnimationDemoState();
+}
+
+class _AnimationDemoState extends State<AnimationDemo> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1),
+    );
+    _animation = Tween<double>(begin: 100.0, end: 200.0).animate(_controller);
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _controller.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        _controller.forward();
+      }
+    });
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _toggleAnimation() {
+    if (_controller.isAnimating) {
+      _controller.stop();
+    } else {
+      _controller.forward();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Animation Demo'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return Container(
+                  width: _animation.value,
+                  height: _animation.value,
+                  color: Colors.blue,
+                  child: Center(
+                    child: Text(
+                      'Click Me!',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                );
+              },
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: _toggleAnimation,
+              child: Text(_controller.isAnimating ? 'Stop Animation' : 'Start Animation'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
